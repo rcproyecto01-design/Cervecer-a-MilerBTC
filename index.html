@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cervecería Premium - Las Mejores Cervezas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffa500;
+        }
+
+        .hero {
+            padding: 150px 20px 80px;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23ffa500" opacity="0.1" width="1200" height="600"/></svg>');
+            background-size: cover;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ffa500;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .payment-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 165, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid #ffa500;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.3);
+            border-color: #ffa500;
+        }
+
+        .product-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .product-card h3 {
+            color: #ffa500;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #fff;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+            color: #fff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 165, 0, 0.5);
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 35px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+
+        .payment-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+        }
+
+        .payment-section h2 {
+            color: #ffa500;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .payment-option {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #ffa500;
+        }
+
+        .payment-option h3 {
+            color: #ffa500;
+            margin-bottom: 15px;
+        }
+
+        .mp-button {
+            background: #009ee3;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .crypto-address {
+            background: rgba(255, 165, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-size: 12px;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 30px;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .products {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">🍺 Cervecería Premium</div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Las Mejores Cervezas Artesanales</h1>
+        <p>Calidad premium directo a tu puerta</p>
+        <div class="payment-badges">
+            <span class="badge">💳 Mercado Pago</span>
+            <span class="badge">₿ Bitcoin</span>
+            <span class="badge">🚚 Envío Rápido</span>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2 style="text-align: center; font-size: 36px; margin-bottom: 20px; color: #ffa500;">Nuestros Productos</h2>
+        
+        <div class="products">
+            <div class="product-card">
+                <div class="product-icon">🍺</div>
+                <h3>Cerveza Rubia</h3>
+                <p>Sabor suave y refrescante, ideal para cualquier ocasión</p>
+                <div class="price">$800</div>
+                <button class="btn" onclick="ordenarWhatsApp('Cerveza Rubia', 800)">Ordenar Ahora</button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon">🍻</div>
+                <h3>Cerveza Negra</h3>
+                <p>Intensa y robusta, para paladares exigentes</p>
+                <div class="price">$900</div>
+                <button class="btn" onclick="ordenarWhatsApp('Cerveza Negra', 900)">Ordenar Ahora</button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon">🍺</div>
+                <h3>IPA Artesanal</h3>
+                <p>Amargor perfecto con notas cítricas</p>
+                <div class="price">$1.100</div>
+                <button class="btn" onclick="ordenarWhatsApp('IPA Artesanal', 1100)">Ordenar Ahora</button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon">🍻</div>
+                <h3>Pack x6 Mixto</h3>
+                <p>Variedad de nuestras mejores cervezas</p>
+                <div class="price">$4.500</div>
+                <button class="btn" onclick="ordenarWhatsApp('Pack x6 Mixto', 4500)">Ordenar Ahora</button>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h2>Métodos de Pago</h2>
+            <div class="payment-options">
+                <div class="payment-option">
+                    <h3>💳 Mercado Pago</h3>
+                    <p>Paga con tarjeta, efectivo o dinero en cuenta</p>
+                    <a href="#" class="mp-button" onclick="pagarMercadoPago()">Ir a Mercado Pago</a>
+                    <p style="margin-top: 15px; font-size: 14px;">Acepto todas las tarjetas y medios de pago</p>
+                </div>
+
+                <div class="payment-option">
+                    <h3>₿ Bitcoin</h3>
+                    <p>Paga con criptomonedas de forma segura</p>
+                    <div class="crypto-address">
+                        <strong>Dirección BTC:</strong><br>
+                        bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh
+                    </div>
+                    <p style="margin-top: 10px; font-size: 13px;">Envía el comprobante por WhatsApp</p>
+                </div>
+
+                <div class="payment-option">
+                    <h3>💬 WhatsApp</h3>
+                    <p>Contactanos directamente para coordinar tu pago y entrega</p>
+                    <button class="btn" onclick="abrirWhatsApp()" style="margin-top: 15px;">Chatear Ahora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Cervecería Premium. Todos los derechos reservados.</p>
+        <p style="margin-top: 10px;">Bebé con moderación. Prohibida su venta a menores de 18 años.</p>
+    </footer>
+
+    <a class="whatsapp-float" onclick="abrirWhatsApp()">
+        <span>💬</span>
+    </a>
+
+    <script>
+        // CONFIGURACIÓN - Cambia estos valores por los tuyos
+        const CONFIG = {
+            numeroWhatsApp: '5491234567890', // Cambia por tu número con código de país
+            linkMercadoPago: 'https://mpago.la/TU_LINK', // Cambia por tu link de Mercado Pago
+            walletBitcoin: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' // Cambia por tu wallet
+        };
+
+        function ordenarWhatsApp(producto, precio) {
+            const mensaje = `Hola! Me interesa ordenar: ${producto} - Precio: $${precio}. ¿Cómo puedo pagar?`;
+            const url = `https://wa.me/${CONFIG.numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function abrirWhatsApp() {
+            const mensaje = '¡Hola! Me gustaría consultar sobre sus cervezas.';
+            const url = `https://wa.me/${CONFIG.numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function pagarMercadoPago() {
+            // Aquí debes colocar tu link de Mercado Pago
+            // Puedes crear un link de pago en: https://www.mercadopago.com.ar/tools/create
+            alert('Redirigiendo a Mercado Pago...\n\nRecuerda configurar tu link de pago en el código (variable CONFIG.linkMercadoPago)');
+            
+            // Descomenta la siguiente línea cuando tengas tu link de MP
+            // window.open(CONFIG.linkMercadoPago, '_blank');
+        }
+
+        // Efecto de scroll suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

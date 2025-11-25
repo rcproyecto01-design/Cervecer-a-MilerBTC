@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cervecería Premium - Las Mejores Cervezas</title>
+    <title>MilerBTC Cervecería Premium - Las Mejores Cervezas</title>
     <style>
         * {
             margin: 0;
@@ -40,6 +40,28 @@
             font-size: 28px;
             font-weight: bold;
             color: #ffa500;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .hero {
@@ -123,6 +145,36 @@
             color: #fff;
         }
 
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .quantity-btn {
+            background: #ffa500;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .quantity-btn:hover {
+            background: #ff8c00;
+        }
+
+        .quantity-display {
+            font-size: 24px;
+            font-weight: bold;
+            min-width: 30px;
+        }
+
         .btn {
             background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
             color: #fff;
@@ -140,6 +192,12 @@
         .btn:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(255, 165, 0, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .whatsapp-float {
@@ -166,58 +224,162 @@
             transform: scale(1.1);
         }
 
-        .payment-section {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 40px;
-            border-radius: 15px;
-            margin: 40px 0;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            overflow-y: auto;
         }
 
-        .payment-section h2 {
+        .modal-content {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            margin: 50px auto;
+            padding: 40px;
+            border: 2px solid #ffa500;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close {
             color: #ffa500;
-            margin-bottom: 30px;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff8c00;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffa500;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffa500;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff8c00;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .cart-item {
+            background: rgba(255, 165, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shipping-cost {
+            background: rgba(255, 165, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
             text-align: center;
-            font-size: 32px;
+        }
+
+        .total-cost {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffa500;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 165, 0, 0.3);
+            border-top: 4px solid #ffa500;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .payment-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .payment-option {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 25px;
+            background: rgba(255, 165, 0, 0.1);
+            padding: 15px;
+            border: 2px solid #ffa500;
             border-radius: 10px;
             text-align: center;
-            border: 2px solid #ffa500;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .payment-option h3 {
-            color: #ffa500;
-            margin-bottom: 15px;
+        .payment-option:hover {
+            background: rgba(255, 165, 0, 0.2);
+            transform: scale(1.05);
         }
 
-        .mp-button {
-            background: #009ee3;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
-            font-weight: bold;
+        .payment-option.selected {
+            background: rgba(255, 165, 0, 0.3);
+            border-color: #ff8c00;
         }
 
-        .crypto-address {
-            background: rgba(255, 165, 0, 0.1);
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            word-break: break-all;
-            font-size: 12px;
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
         }
 
         footer {
@@ -235,6 +397,11 @@
             .products {
                 grid-template-columns: 1fr;
             }
+
+            .modal-content {
+                margin: 20px auto;
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -242,6 +409,10 @@
     <header>
         <nav>
             <div class="logo">🍺 Cervecería Premium</div>
+            <div class="cart-icon" onclick="openCart()">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
         </nav>
     </header>
 
@@ -251,72 +422,133 @@
         <div class="payment-badges">
             <span class="badge">💳 Mercado Pago</span>
             <span class="badge">₿ Bitcoin</span>
-            <span class="badge">🚚 Envío Rápido</span>
+            <span class="badge">🚚 Envío con Zipnova</span>
         </div>
     </section>
 
     <div class="container">
         <h2 style="text-align: center; font-size: 36px; margin-bottom: 20px; color: #ffa500;">Nuestros Productos</h2>
         
-        <div class="products">
-            <div class="product-card">
-                <div class="product-icon">🍺</div>
-                <h3>Cerveza Rubia</h3>
-                <p>Sabor suave y refrescante, ideal para cualquier ocasión</p>
-                <div class="price">$800</div>
-                <button class="btn" onclick="ordenarWhatsApp('Cerveza Rubia', 800)">Ordenar Ahora</button>
-            </div>
+        <div class="products" id="productsContainer"></div>
+    </div>
 
-            <div class="product-card">
-                <div class="product-icon">🍻</div>
-                <h3>Cerveza Negra</h3>
-                <p>Intensa y robusta, para paladares exigentes</p>
-                <div class="price">$900</div>
-                <button class="btn" onclick="ordenarWhatsApp('Cerveza Negra', 900)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product-card">
-                <div class="product-icon">🍺</div>
-                <h3>IPA Artesanal</h3>
-                <p>Amargor perfecto con notas cítricas</p>
-                <div class="price">$1.100</div>
-                <button class="btn" onclick="ordenarWhatsApp('IPA Artesanal', 1100)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product-card">
-                <div class="product-icon">🍻</div>
-                <h3>Pack x6 Mixto</h3>
-                <p>Variedad de nuestras mejores cervezas</p>
-                <div class="price">$4.500</div>
-                <button class="btn" onclick="ordenarWhatsApp('Pack x6 Mixto', 4500)">Ordenar Ahora</button>
-            </div>
-        </div>
-
-        <div class="payment-section">
-            <h2>Métodos de Pago</h2>
-            <div class="payment-options">
-                <div class="payment-option">
-                    <h3>💳 Mercado Pago</h3>
-                    <p>Paga con tarjeta, efectivo o dinero en cuenta</p>
-                    <a href="#" class="mp-button" onclick="pagarMercadoPago()">Ir a Mercado Pago</a>
-                    <p style="margin-top: 15px; font-size: 14px;">Acepto todas las tarjetas y medios de pago</p>
+    <!-- Modal Carrito -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <h2 style="color: #ffa500; margin-bottom: 30px;">Tu Pedido</h2>
+            
+            <div id="cartItems"></div>
+            
+            <div id="checkoutForm" style="display: none;">
+                <h3 style="color: #ffa500; margin: 30px 0 20px;">Datos de Envío</h3>
+                
+                <div class="form-group">
+                    <label>Nombre Completo *</label>
+                    <input type="text" id="customerName" required>
                 </div>
 
-                <div class="payment-option">
-                    <h3>₿ Bitcoin</h3>
-                    <p>Paga con criptomonedas de forma segura</p>
-                    <div class="crypto-address">
-                        <strong>Dirección BTC:</strong><br>
-                        bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh
+                <div class="form-group">
+                    <label>Teléfono *</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Provincia *</label>
+                    <select id="provincia" required>
+                        <option value="">Selecciona una provincia</option>
+                        <option value="Buenos Aires">Buenos Aires</option>
+                        <option value="CABA">CABA</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Santa Fe">Santa Fe</option>
+                        <option value="Mendoza">Mendoza</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ciudad *</label>
+                    <input type="text" id="ciudad" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Código Postal *</label>
+                    <input type="text" id="codigoPostal" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Calle *</label>
+                    <input type="text" id="calle" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Número *</label>
+                    <input type="text" id="numero" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Piso/Depto (Opcional)</label>
+                    <input type="text" id="piso">
+                </div>
+
+                <button class="btn" onclick="calculateShipping()" style="width: 100%; margin-top: 20px;">
+                    Calcular Costo de Envío
+                </button>
+
+                <div class="loading" id="loadingShipping">
+                    <div class="spinner"></div>
+                    <p>Calculando costo de envío...</p>
+                </div>
+
+                <div class="shipping-cost" id="shippingCost" style="display: none;">
+                    <h3 style="color: #ffa500;">Costo de Envío: $<span id="shippingPrice">0</span></h3>
+                    <p>Tiempo estimado: <span id="estimatedTime">-</span></p>
+                </div>
+
+                <div class="total-cost" id="totalCost" style="display: none;">
+                    Total Final: $<span id="totalPrice">0</span>
+                </div>
+
+                <div id="paymentSection" style="display: none;">
+                    <h3 style="color: #ffa500; margin: 30px 0 20px;">Método de Pago</h3>
+                    
+                    <div class="payment-options">
+                        <div class="payment-option" onclick="selectPayment('mercadopago')">
+                            <div style="font-size: 30px;">💳</div>
+                            <div>Mercado Pago</div>
+                        </div>
+                        <div class="payment-option" onclick="selectPayment('bitcoin')">
+                            <div style="font-size: 30px;">₿</div>
+                            <div>Bitcoin</div>
+                        </div>
+                        <div class="payment-option" onclick="selectPayment('transferencia')">
+                            <div style="font-size: 30px;">🏦</div>
+                            <div>Transferencia</div>
+                        </div>
                     </div>
-                    <p style="margin-top: 10px; font-size: 13px;">Envía el comprobante por WhatsApp</p>
+
+                    <button class="btn" id="finalizeBtn" onclick="finalizeOrder()" style="width: 100%; margin-top: 30px;" disabled>
+                        Finalizar Pedido
+                    </button>
                 </div>
 
-                <div class="payment-option">
-                    <h3>💬 WhatsApp</h3>
-                    <p>Contactanos directamente para coordinar tu pago y entrega</p>
-                    <button class="btn" onclick="abrirWhatsApp()" style="margin-top: 15px;">Chatear Ahora</button>
+                <div class="success-message" id="successMessage">
+                    <h3 style="color: #4CAF50;">¡Pedido Creado Exitosamente! 🎉</h3>
+                    <p id="successText"></p>
                 </div>
+
+                <div class="error-message" id="errorMessage">
+                    <h3 style="color: #f44336;">Error</h3>
+                    <p id="errorText"></p>
+                </div>
+            </div>
+
+            <div id="emptyCart">
+                <p style="text-align: center; padding: 40px;">Tu carrito está vacío</p>
             </div>
         </div>
     </div>
@@ -331,17 +563,251 @@
     </a>
 
     <script>
-        // CONFIGURACIÓN - Cambia estos valores por los tuyos
         const CONFIG = {
-            numeroWhatsApp: '5491234567890', // Cambia por tu número con código de país
-            linkMercadoPago: 'https://mpago.la/TU_LINK', // Cambia por tu link de Mercado Pago
-            walletBitcoin: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' // Cambia por tu wallet
+            numeroWhatsApp: '5491234567890',
+            apiEndpoint: '/.netlify/functions/zipnova'
         };
 
-        function ordenarWhatsApp(producto, precio) {
-            const mensaje = `Hola! Me interesa ordenar: ${producto} - Precio: $${precio}. ¿Cómo puedo pagar?`;
-            const url = `https://wa.me/${CONFIG.numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-            window.open(url, '_blank');
+        const products = [
+            { id: 1, name: 'Cerveza Rubia', price: 800, icon: '🍺', weight: 0.5 },
+            { id: 2, name: 'Cerveza Negra', price: 900, icon: '🍻', weight: 0.5 },
+            { id: 3, name: 'IPA Artesanal', price: 1100, icon: '🍺', weight: 0.5 },
+            { id: 4, name: 'Pack x6 Mixto', price: 4500, icon: '🍻', weight: 3 }
+        ];
+
+        let cart = [];
+        let selectedPayment = '';
+        let shippingData = null;
+
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-icon">${product.icon}</div>
+                    <h3>${product.name}</h3>
+                    <div class="price">$${product.price}</div>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn" onclick="updateQuantity(${product.id}, -1)">-</button>
+                        <span class="quantity-display" id="qty-${product.id}">0</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${product.id}, 1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
+                </div>
+            `).join('');
+        }
+
+        function updateQuantity(productId, change) {
+            const qtyElement = document.getElementById(`qty-${productId}`);
+            let currentQty = parseInt(qtyElement.textContent);
+            currentQty = Math.max(0, currentQty + change);
+            qtyElement.textContent = currentQty;
+        }
+
+        function addToCart(productId) {
+            const qtyElement = document.getElementById(`qty-${productId}`);
+            const qty = parseInt(qtyElement.textContent);
+            
+            if (qty === 0) {
+                alert('Por favor selecciona una cantidad');
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += qty;
+            } else {
+                cart.push({ ...product, quantity: qty });
+            }
+
+            qtyElement.textContent = '0';
+            updateCartCount();
+            alert(`${product.name} agregado al carrito`);
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        function openCart() {
+            if (cart.length === 0) {
+                document.getElementById('emptyCart').style.display = 'block';
+                document.getElementById('cartItems').style.display = 'none';
+                document.getElementById('checkoutForm').style.display = 'none';
+            } else {
+                document.getElementById('emptyCart').style.display = 'none';
+                document.getElementById('cartItems').style.display = 'block';
+                document.getElementById('checkoutForm').style.display = 'block';
+                renderCart();
+            }
+            document.getElementById('cartModal').style.display = 'block';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function renderCart() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            cartItemsDiv.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        Cantidad: ${item.quantity} x $${item.price}
+                    </div>
+                    <div style="text-align: right;">
+                        <strong>$${item.price * item.quantity}</strong><br>
+                        <button onclick="removeFromCart(${item.id})" style="color: #ff4444; background: none; border: none; cursor: pointer;">Eliminar</button>
+                    </div>
+                </div>
+            `).join('') + `
+                <div style="text-align: right; font-size: 20px; font-weight: bold; margin-top: 20px; color: #ffa500;">
+                    Subtotal: $${subtotal}
+                </div>
+            `;
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            if (cart.length === 0) {
+                closeCart();
+            } else {
+                renderCart();
+            }
+        }
+
+        async function calculateShipping() {
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+            const email = document.getElementById('customerEmail').value;
+            const provincia = document.getElementById('provincia').value;
+            const ciudad = document.getElementById('ciudad').value;
+            const cp = document.getElementById('codigoPostal').value;
+            const calle = document.getElementById('calle').value;
+            const numero = document.getElementById('numero').value;
+
+            if (!name || !phone || !email || !provincia || !ciudad || !cp || !calle || !numero) {
+                alert('Por favor completa todos los campos obligatorios');
+                return;
+            }
+
+            document.getElementById('loadingShipping').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+
+            try {
+                const totalWeight = cart.reduce((sum, item) => sum + (item.weight * item.quantity), 0);
+                
+                const response = await fetch(CONFIG.apiEndpoint + '/quote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        destination: {
+                            provincia,
+                            ciudad,
+                            codigo_postal: cp,
+                            calle,
+                            numero,
+                            piso: document.getElementById('piso').value
+                        },
+                        weight: totalWeight
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    shippingData = data.data;
+                    document.getElementById('shippingPrice').textContent = data.data.price;
+                    document.getElementById('estimatedTime').textContent = data.data.estimatedTime || '2-5 días';
+                    document.getElementById('shippingCost').style.display = 'block';
+                    
+                    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const total = subtotal + data.data.price;
+                    document.getElementById('totalPrice').textContent = total;
+                    document.getElementById('totalCost').style.display = 'block';
+                    document.getElementById('paymentSection').style.display = 'block';
+                } else {
+                    throw new Error(data.message || 'Error al calcular envío');
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorText').textContent = error.message;
+            } finally {
+                document.getElementById('loadingShipping').style.display = 'none';
+            }
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.payment-option').classList.add('selected');
+            document.getElementById('finalizeBtn').disabled = false;
+        }
+
+        async function finalizeOrder() {
+            if (!selectedPayment) {
+                alert('Por favor selecciona un método de pago');
+                return;
+            }
+
+            document.getElementById('finalizeBtn').disabled = true;
+            document.getElementById('errorMessage').style.display = 'none';
+
+            try {
+                const orderData = {
+                    customer: {
+                        name: document.getElementById('customerName').value,
+                        phone: document.getElementById('customerPhone').value,
+                        email: document.getElementById('customerEmail').value
+                    },
+                    address: {
+                        provincia: document.getElementById('provincia').value,
+                        ciudad: document.getElementById('ciudad').value,
+                        codigo_postal: document.getElementById('codigoPostal').value,
+                        calle: document.getElementById('calle').value,
+                        numero: document.getElementById('numero').value,
+                        piso: document.getElementById('piso').value
+                    },
+                    items: cart,
+                    payment: selectedPayment,
+                    shippingCost: parseFloat(document.getElementById('shippingPrice').textContent)
+                };
+
+                const response = await fetch(CONFIG.apiEndpoint + '/create-shipment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('successText').innerHTML = `
+                        <strong>Número de tracking:</strong> ${data.trackingNumber}<br>
+                        <strong>Total:</strong> $${document.getElementById('totalPrice').textContent}<br><br>
+                        Te contactaremos por WhatsApp para coordinar el pago.
+                    `;
+                    
+                    cart = [];
+                    updateCartCount();
+                    
+                    setTimeout(() => {
+                        closeCart();
+                    }, 5000);
+                } else {
+                    throw new Error(data.message || 'Error al crear el pedido');
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorText').textContent = error.message;
+                document.getElementById('finalizeBtn').disabled = false;
+            }
         }
 
         function abrirWhatsApp() {
@@ -350,25 +816,13 @@
             window.open(url, '_blank');
         }
 
-        function pagarMercadoPago() {
-            // Aquí debes colocar tu link de Mercado Pago
-            // Puedes crear un link de pago en: https://www.mercadopago.com.ar/tools/create
-            alert('Redirigiendo a Mercado Pago...\n\nRecuerda configurar tu link de pago en el código (variable CONFIG.linkMercadoPago)');
-            
-            // Descomenta la siguiente línea cuando tengas tu link de MP
-            // window.open(CONFIG.linkMercadoPago, '_blank');
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('cartModal')) {
+                closeCart();
+            }
         }
 
-        // Efecto de scroll suave
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
+        renderProducts();
     </script>
 </body>
 </html>

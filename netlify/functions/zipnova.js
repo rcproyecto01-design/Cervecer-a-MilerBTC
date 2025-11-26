@@ -1,16 +1,13 @@
 const https = require('https');
 
-// Credenciales de Zipnova (se configurarán como variables de entorno)
 const ZIPNOVA_API_KEY = process.env.ZIPNOVA_API_KEY;
 const ZIPNOVA_ACCOUNT_ID = process.env.ZIPNOVA_ACCOUNT_ID;
-const ZIPNOVA_API_URL = 'https://api.zipnova.com/v1';
 
-// Función auxiliar para hacer peticiones HTTPS
 function makeRequest(path, method, data) {
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'api.zipnova.com',
-      path: `/v1${path}`,
+      hostname: 'api.zipnova.com.ar',
+      path: `/v2${path}`,
       method: method,
       headers: {
         'Content-Type': 'application/json',
@@ -26,7 +23,7 @@ function makeRequest(path, method, data) {
         try {
           resolve(JSON.parse(body));
         } catch (e) {
-          resolve({ error: 'Invalid JSON response' });
+          resolve({ error: 'Invalid JSON response', body: body });
         }
       });
     });
@@ -38,14 +35,12 @@ function makeRequest(path, method, data) {
 }
 
 exports.handler = async (event, context) => {
-  // Configurar CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
 
-  // Manejar preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
@@ -62,25 +57,32 @@ exports.handler = async (event, context) => {
     const { path } = event;
     const body = JSON.parse(event.body);
 
-    // Cotizar envío
     if (path.includes('/quote')) {
       const quoteData = {
+        account_id: ZIPNOVA_ACCOUNT_ID,
         destination: {
-          address: `${body.destination.calle} ${body.destination.numero}`,
+          name: "Cliente",
+          street: body.destination.calle,
+          street_number: body.destination.numero,
+          street_extras: body.destination.piso || "",
           city: body.destination.ciudad,
           state: body.destination.provincia,
-          postal_code: body.destination.codigo_postal,
-          country: 'AR'
+          zipcode: body.destination.codigo_postal,
+          country: "AR"
         },
-        package: {
-          weight: body.weight,
-          length: 30,
+        packages: [{
+          weight: body.weight * 1000,
+          height: 20,
           width: 20,
-          height: 20
-        }
+          length: 30
+        }]
       };
 
-      const result = await makeRequest('/shipments/quote', 'POST', quoteData);
+      const result = await makeRequest('/shipments/rates', 'POST', quoteData);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
       return {
         statusCode: 200,
@@ -88,74 +90,56 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           success: true,
           data: {
-            price: result.price || 1500,
-            estimatedTime: result.estimated_delivery || '2-5 días'
+            price: result.rates?.[0]?.price || 1500,
+            estimatedTime: '2-5 días'
           }
         })
       };
     }
 
-    // Crear envío
     if (path.includes('/create-shipment')) {
       const shipmentData = {
+        account_id: ZIPNOVA_ACCOUNT_ID,
         origin: {
           name: 'Cervecería Premium',
           phone: '5491112345678',
-          address: 'Tu dirección de origen',
+          street: 'Tu calle',
+          street_number: '123',
           city: 'Tu ciudad',
           state: 'Tu provincia',
-          postal_code: '1234',
+          zipcode: '1234',
           country: 'AR'
         },
         destination: {
           name: body.customer.name,
           phone: body.customer.phone,
           email: body.customer.email,
-          address: `${body.address.calle} ${body.address.numero}${body.address.piso ? ' ' + body.address.piso : ''}`,
+          street: body.address.calle,
+          street_number: body.address.numero,
+          street_extras: body.address.piso || '',
           city: body.address.ciudad,
           state: body.address.provincia,
-          postal_code: body.address.codigo_postal,
+          zipcode: body.address.codigo_postal,
           country: 'AR'
         },
-        package: {
-          weight: body.items.reduce((sum, item) => sum + (item.weight * item.quantity), 0),
-          description: body.items.map(item => `${item.name} x${item.quantity}`).join(', '),
-          value: body.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-        },
-        payment_method: body.payment
+        packages: [{
+          weight: body.items.reduce((sum, item) => sum + (item.weight * item.quantity * 1000), 0),
+          height: 20,
+          width: 20,
+          length: 30,
+          description: body.items.map(item => `${item.name} x${item.quantity}`).join(', ')
+        }],
+        declared_value: body.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
       };
 
       const result = await makeRequest('/shipments', 'POST', shipmentData);
-
-      // Enviar notificación por WhatsApp (opcional)
-      const whatsappMsg = `
-🍺 *NUEVO PEDIDO*
-
-*Cliente:* ${body.customer.name}
-*Teléfono:* ${body.customer.phone}
-*Email:* ${body.customer.email}
-
-*Productos:*
-${body.items.map(item => `- ${item.name} x${item.quantity}: $${item.price * item.quantity}`).join('\n')}
-
-*Envío:* $${body.shippingCost}
-*Total:* $${body.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) + body.shippingCost}
-
-*Dirección:*
-${body.address.calle} ${body.address.numero}${body.address.piso ? ' ' + body.address.piso : ''}
-${body.address.ciudad}, ${body.address.provincia}
-CP: ${body.address.codigo_postal}
-
-*Método de pago:* ${body.payment}
-*Tracking:* ${result.tracking_number || 'Pendiente'}
-      `;
 
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
           success: true,
-          trackingNumber: result.tracking_number || 'ZN' + Date.now(),
+          trackingNumber: result.tracking_code || 'ZN' + Date.now(),
           message: 'Envío creado exitosamente'
         })
       };

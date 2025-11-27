@@ -1,0 +1,26 @@
+const getQuote = async (orderData) => {
+  try {
+    const response = await fetch('/.netlify/functions/zipnova/quote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        origin: orderData.origin,
+        destination: orderData.destination,
+        package: orderData.package
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Error de cotización:', error);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en la solicitud:', error);
+    return null;
+  }
+};

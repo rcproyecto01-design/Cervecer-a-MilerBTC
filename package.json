@@ -3,23 +3,12 @@
   "version": "1.0.0",
   "description": "Tienda de cervezas con integración Zipnova",
   "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
-```
-
----
-
-## 🚀 INSTRUCCIONES PARA SUBIR TODO A NETLIFY:
-
-### **Paso 1: Preparar los archivos en tu computadora**
-
-Crea esta estructura de carpetas:
-```
-cerveceria/
-├── index.html (el código HTML completo)
-├── netlify.toml
-├── package.json
-└── netlify/
-    └── functions/
-        └── zipnova.js

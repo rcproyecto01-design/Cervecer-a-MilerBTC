@@ -109,3 +109,17 @@ export default async function handler(req, res) {
 **2.2** En el nombre escribe:
 ```
 vercel.json
+{
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
+}
